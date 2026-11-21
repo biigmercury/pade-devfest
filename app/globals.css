@@ -1,26 +1,95 @@
 @import "tailwindcss";
 
+/* Pàdé design tokens: dark by default, warm sunset gradient, big rounded surfaces. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #0a0a12;
+  --surface: #13131d;
+  --surface-2: #1b1b28;
+  --line: rgba(255, 255, 255, 0.08);
+  --text: #f6f4ff;
+  --muted: #a3a3b8;
+  --coral: #ff7a45;
+  --pink: #ff3d8b;
+  --violet: #8b5cf6;
+  --green: #2bd47d;
+  --grad: linear-gradient(120deg, var(--coral) 0%, var(--pink) 48%, var(--violet) 100%);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-coral: var(--coral);
+  --color-pink: var(--pink);
+  --color-violet: var(--violet);
+  --color-green: var(--green);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html { color-scheme: dark; }
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--ink);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bg-grad { background-image: var(--grad); }
+.text-grad {
+  background-image: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.ring-grad {
+  background: linear-gradient(var(--surface), var(--surface)) padding-box, var(--grad) border-box;
+  border: 2px solid transparent;
+}
+
+/* Soft glow blobs behind content */
+.aura::before,
+.aura::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.22;
+  pointer-events: none;
+}
+.aura::before { background: var(--pink); top: -30vmax; right: -25vmax; animation: drift 18s ease-in-out infinite alternate; }
+.aura::after { background: var(--violet); bottom: -35vmax; left: -25vmax; animation: drift 22s ease-in-out infinite alternate-reverse; }
+
+@keyframes drift { to { transform: translate3d(6vmax, 4vmax, 0) scale(1.08); } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes pop { 0% { transform: scale(0.6); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+@keyframes burst {
+  0% { transform: translate(0, 0) scale(0.4); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(1.2) rotate(var(--rot)); opacity: 0; }
+}
+@keyframes floaty { 50% { transform: translateY(-6px); } }
+
+.rise { animation: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.pop { animation: pop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.floaty { animation: floaty 3.2s ease-in-out infinite; }
+
+.skeleton { position: relative; overflow: hidden; background: var(--surface-2); }
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  animation: shimmer 1.4s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
 }

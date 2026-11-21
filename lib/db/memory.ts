@@ -1,13 +1,26 @@
 import "server-only";
 import type { MatchRow, Profile } from "../types";
 import type { Candidate, Db } from "./types";
+import demoProfiles from "../../scripts/demo-profiles.json";
 
 // In-memory store for local development and load testing when Supabase isn't configured.
 // Never used in production (see lib/db/index.ts).
 
 type Store = { profiles: Profile[]; byId: Map<string, Profile>; matches: MatchRow[]; pairs: Set<string> };
 const g = globalThis as unknown as { __padeMem?: Store };
-const store: Store = (g.__padeMem ??= { profiles: [], byId: new Map(), matches: [], pairs: new Set() });
+const store: Store = (g.__padeMem ??= seeded());
+
+// Start with the same 30 demo profiles the Supabase seed script inserts.
+function seeded(): Store {
+  const t0 = Date.now() - 3600_000;
+  const profiles: Profile[] = demoProfiles.map((p, i) => ({
+    ...p,
+    id: crypto.randomUUID(),
+    is_demo: true,
+    created_at: new Date(t0 + i * 1000).toISOString(),
+  }));
+  return { profiles, byId: new Map(profiles.map((p) => [p.id, p])), matches: [], pairs: new Set() };
+}
 
 const pick = (p: Profile): Candidate => ({
   id: p.id, name: p.name, emoji: p.emoji, interests: p.interests, goal: p.goal, fun_pick: p.fun_pick, is_demo: p.is_demo,

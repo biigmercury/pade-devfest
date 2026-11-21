@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node --env-file=.env.local scripts/seed.mjs",
+    "loadtest": "node scripts/loadtest.mjs",
+    "dev:memory": "PADE_MEMORY_DB=1 next dev"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.2",
