@@ -30,10 +30,14 @@ export function Onboarding({ onDone }: Props) {
     if (!ready || busy) return;
     setBusy(true);
     setError("");
-    const res = await api<{ profile: PublicPerson }>("/api/profile", {
-      method: "POST",
-      body: JSON.stringify({ name: name.trim(), emoji, interests, goal, fun_pick: fun }),
-    });
+    const body = JSON.stringify({ name: name.trim(), emoji, interests, goal, fun_pick: fun });
+    let res = await api<{ profile: PublicPerson }>("/api/profile", { method: "POST", body });
+    // Busy venue network: wait as told and retry quietly (twice) instead of showing an error.
+    for (let i = 0; i < 2 && !res.ok && (res.status === 429 || res.status === 0 || res.status >= 502); i++) {
+      const wait = Number(res.data?.retryAfterMs) || 1500 * (i + 1);
+      await new Promise((r) => setTimeout(r, Math.min(wait, 8000) + Math.random() * 500));
+      res = await api<{ profile: PublicPerson }>("/api/profile", { method: "POST", body });
+    }
     setBusy(false);
     if (!res.ok) return setError(res.error);
     onDone(res.data.profile);

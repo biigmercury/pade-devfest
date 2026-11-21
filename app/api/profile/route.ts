@@ -6,7 +6,7 @@ import { toPerson } from "@/lib/views";
 
 // Venue wifi means many attendees share one public IP, so this is generous:
 // it stops scripts, not crowds.
-const SIGNUP_LIMIT = 40;
+const SIGNUP_LIMIT = 120;
 const SIGNUP_WINDOW_MS = 10_000;
 
 export async function POST(req: Request) {

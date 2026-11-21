@@ -223,7 +223,7 @@ function MatchCard({ m, onFound, celebrate, dim }: { m: MatchView; onFound: () =
       <div className="relative flex items-center gap-4">
         <div className="ring-grad floaty grid h-20 w-20 shrink-0 place-items-center rounded-full text-5xl">{m.person.emoji}</div>
         <div className="min-w-0">
-          <h3 className="truncate font-display text-[2rem] font-extrabold leading-tight">{m.person.name}</h3>
+          <h3 className="line-clamp-2 break-words font-display text-[1.85rem] font-extrabold leading-[1.05]">{m.person.name}</h3>
           <p className="text-[0.95rem] font-medium text-muted">
             {goalLabel(m.person.goal)} · {funLabel(m.person.fun_pick)}
           </p>

@@ -33,6 +33,7 @@ export function sanitizeName(raw: unknown): string | null {
   if (typeof raw !== "string") return null;
   let s = raw
     .normalize("NFC")
+    .replace(/<[^>]*>/g, " ")
     // strip control chars, invisible format chars (zero-width, bidi overrides) and angle brackets
     .replace(/[\p{Cc}\p{Cf}<>]/gu, "")
     .replace(/https?:\/\/\S+/gi, "")

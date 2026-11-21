@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { headers } from "next/headers";
 import QRCode from "qrcode";
 import { Wordmark } from "@/components/Logo";
@@ -14,11 +15,7 @@ async function appUrl() {
   return `${proto}://${host}`;
 }
 
-export default async function LivePage() {
-  const url = await appUrl();
-  const qr = await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M", color: { dark: "#0a0a12", light: "#ffffff" } });
-  const pretty = url.replace(/^https?:\/\//, "");
-
+export default function LivePage() {
   return (
     <main className="flex min-h-dvh flex-col px-[4vw] py-[4vh]">
       <header className="flex items-center justify-between">
@@ -42,13 +39,27 @@ export default async function LivePage() {
         </section>
 
         <aside className="flex flex-col items-center">
-          <div className="rounded-[2.5rem] bg-white p-[2vw] shadow-2xl shadow-pink/20">
-            <div className="aspect-square w-[min(30vw,60vh)] [&>svg]:h-full [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: qr }} />
-          </div>
-          <p className="mt-6 font-display text-[clamp(1.8rem,3vw,3.5rem)] font-extrabold">Scan to Pàdé 📱</p>
-          <p className="mt-1 text-[clamp(1.2rem,1.8vw,2rem)] font-semibold text-muted">{pretty}</p>
+          <Suspense fallback={<div className="aspect-square w-[min(30vw,60vh)] rounded-[2.5rem] bg-white/90" />}>
+            <QrBlock />
+          </Suspense>
         </aside>
       </div>
     </main>
+  );
+}
+
+// The QR depends on the request host, so it renders at request time inside Suspense.
+async function QrBlock() {
+  const url = await appUrl();
+  const qr = await QRCode.toString(url, { type: "svg", margin: 1, errorCorrectionLevel: "M", color: { dark: "#0a0a12", light: "#ffffff" } });
+  const pretty = url.replace(/^https?:\/\//, "");
+  return (
+    <>
+      <div className="rounded-[2.5rem] bg-white p-[2vw] shadow-2xl shadow-pink/20">
+        <div className="aspect-square w-[min(30vw,60vh)] [&>svg]:h-full [&>svg]:w-full" dangerouslySetInnerHTML={{ __html: qr }} />
+      </div>
+      <p className="mt-6 font-display text-[clamp(1.8rem,3vw,3.5rem)] font-extrabold">Scan to Pàdé 📱</p>
+      <p className="mt-1 text-[clamp(1.2rem,1.8vw,2rem)] font-semibold text-muted">{pretty}</p>
+    </>
   );
 }

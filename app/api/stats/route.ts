@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { getDb } from "@/lib/db";
 import type { Stats } from "@/lib/types";
 
@@ -8,6 +9,7 @@ const CACHE = "public, max-age=0, s-maxage=5, stale-while-revalidate=30";
 const g = globalThis as unknown as { __padeStats?: { at: number; data: Stats; inflight?: Promise<Stats> } };
 
 export async function GET() {
+  await connection(); // always run at request time; the CDN does the caching
   const db = getDb();
   if (!db) return Response.json({ people: 0, demo: 0, matches: 0, found: 0 }, { headers: { "Cache-Control": "no-store" } });
 
