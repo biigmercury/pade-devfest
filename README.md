@@ -38,6 +38,7 @@ npm install
 | `NEXT_PUBLIC_APP_URL` | Optional. The URL encoded in the `/live` QR code. Defaults to the current host |
 
 ### 3. Seed 30 demo profiles
+Paste [`supabase/seed.sql`](supabase/seed.sql) into the Supabase SQL editor and run it, or from your machine run:
 ```bash
 npm run seed
 ```
@@ -54,6 +55,7 @@ Open http://localhost:3000 on your phone (same wifi) and http://localhost:3000/l
 ## Deploy to Vercel
 1. [vercel.com/new](https://vercel.com/new) → **Import** the `pade-devfest` GitHub repo (framework: Next.js, no other settings needed).
 2. Add the env vars: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY` (and optionally `OPENAI_MODEL`, `NEXT_PUBLIC_APP_URL`).
+   Just want to see it before Supabase is set up? Add only `PADE_MEMORY_DB=1`. The app then runs on a throwaway in-memory store with the demo profiles. Data resets and isn't shared between server instances, so use it for previews only, never for the event.
 3. Click **Deploy**. Open `https://<your-app>.vercel.app/live` on the projector.
 
 Or use the CLI: `npx vercel --prod`, after adding the same env vars with `npx vercel env add`.
